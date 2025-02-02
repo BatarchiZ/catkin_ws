@@ -1,0 +1,8 @@
+prefix=/home/is/catkin_ws/install
+
+Name: cobot_moveit_config_gazebo
+Description: Description of cobot_moveit_config_gazebo
+Version: 0.3.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

@@ -1,0 +1,2 @@
+cobot_IK:cobot_moveit_config_gazebo:cobot_sim_youtube:gazebo-pkgs/gazebo_grasp_plugin:gazebo-pkgs/gazebo_grasp_plugin_ros:gazebo-pkgs/gazebo_state_plugins:gazebo-pkgs/gazebo_test_tools:gazebo-pkgs/gazebo_version_helpers:gazebo-pkgs/gazebo_world_plugin_loader:general-message-pkgs/object_msgs:general-message-pkgs/object_msgs_tools:general-message-pkgs/path_navigation_msgs:opencv_tutorial:position_tracker:roboticsgroup_gazebo_plugins
+-DCATKIN_DEVEL_PREFIX=/home/is/catkin_ws/devel -DCMAKE_INSTALL_PREFIX=/home/is/catkin_ws/install -G Unix Makefiles
