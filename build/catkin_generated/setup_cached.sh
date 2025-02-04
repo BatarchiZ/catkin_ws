@@ -7,7 +7,4 @@
 # new environment variables
 
 # modified environment variables
-export LD_LIBRARY_PATH='/opt/ros/noetic/lib:/opt/ros/noetic/lib/aarch64-linux-gnu'
-export PKG_CONFIG_PATH='/opt/ros/noetic/lib/pkgconfig:/opt/ros/noetic/lib/aarch64-linux-gnu/pkgconfig'
 export PWD='/home/is/catkin_ws/build'
-export PYTHONPATH='/opt/ros/noetic/lib/python3/dist-packages'

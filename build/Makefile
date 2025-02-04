@@ -3067,6 +3067,19 @@ nodelet_generate_messages_eus/fast:
 .PHONY : nodelet_generate_messages_eus/fast
 
 #=============================================================================
+# Target rules for targets named _pick_place_argpass_node
+
+# Build rule for target.
+_pick_place_argpass_node: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 _pick_place_argpass_node
+.PHONY : _pick_place_argpass_node
+
+# fast build rule for target.
+_pick_place_argpass_node/fast:
+	$(MAKE) -f cobot_IK/CMakeFiles/_pick_place_argpass_node.dir/build.make cobot_IK/CMakeFiles/_pick_place_argpass_node.dir/build
+.PHONY : _pick_place_argpass_node/fast
+
+#=============================================================================
 # Target rules for targets named visualization_msgs_generate_messages_py
 
 # Build rule for target.
@@ -3666,6 +3679,7 @@ help:
 	@echo "... moveit_msgs_generate_messages_cpp"
 	@echo "... octomap_msgs_generate_messages_eus"
 	@echo "... nodelet_generate_messages_eus"
+	@echo "... _pick_place_argpass_node"
 	@echo "... visualization_msgs_generate_messages_py"
 	@echo "... moveit_msgs_generate_messages_lisp"
 	@echo "... visualization_msgs_generate_messages_nodejs"

@@ -468,6 +468,21 @@ nodelet_generate_messages_eus/fast:
 .PHONY : nodelet_generate_messages_eus/fast
 
 # Convenience name for target.
+cobot_IK/CMakeFiles/_pick_place_argpass_node.dir/rule:
+	cd /home/is/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 cobot_IK/CMakeFiles/_pick_place_argpass_node.dir/rule
+.PHONY : cobot_IK/CMakeFiles/_pick_place_argpass_node.dir/rule
+
+# Convenience name for target.
+_pick_place_argpass_node: cobot_IK/CMakeFiles/_pick_place_argpass_node.dir/rule
+
+.PHONY : _pick_place_argpass_node
+
+# fast build rule for target.
+_pick_place_argpass_node/fast:
+	cd /home/is/catkin_ws/build && $(MAKE) -f cobot_IK/CMakeFiles/_pick_place_argpass_node.dir/build.make cobot_IK/CMakeFiles/_pick_place_argpass_node.dir/build
+.PHONY : _pick_place_argpass_node/fast
+
+# Convenience name for target.
 cobot_IK/CMakeFiles/visualization_msgs_generate_messages_py.dir/rule:
 	cd /home/is/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 cobot_IK/CMakeFiles/visualization_msgs_generate_messages_py.dir/rule
 .PHONY : cobot_IK/CMakeFiles/visualization_msgs_generate_messages_py.dir/rule
@@ -887,6 +902,33 @@ pcl_msgs_generate_messages_eus/fast:
 	cd /home/is/catkin_ws/build && $(MAKE) -f cobot_IK/CMakeFiles/pcl_msgs_generate_messages_eus.dir/build.make cobot_IK/CMakeFiles/pcl_msgs_generate_messages_eus.dir/build
 .PHONY : pcl_msgs_generate_messages_eus/fast
 
+src/_pick_place_argpass.o: src/_pick_place_argpass.cpp.o
+
+.PHONY : src/_pick_place_argpass.o
+
+# target to build an object file
+src/_pick_place_argpass.cpp.o:
+	cd /home/is/catkin_ws/build && $(MAKE) -f cobot_IK/CMakeFiles/_pick_place_argpass_node.dir/build.make cobot_IK/CMakeFiles/_pick_place_argpass_node.dir/src/_pick_place_argpass.cpp.o
+.PHONY : src/_pick_place_argpass.cpp.o
+
+src/_pick_place_argpass.i: src/_pick_place_argpass.cpp.i
+
+.PHONY : src/_pick_place_argpass.i
+
+# target to preprocess a source file
+src/_pick_place_argpass.cpp.i:
+	cd /home/is/catkin_ws/build && $(MAKE) -f cobot_IK/CMakeFiles/_pick_place_argpass_node.dir/build.make cobot_IK/CMakeFiles/_pick_place_argpass_node.dir/src/_pick_place_argpass.cpp.i
+.PHONY : src/_pick_place_argpass.cpp.i
+
+src/_pick_place_argpass.s: src/_pick_place_argpass.cpp.s
+
+.PHONY : src/_pick_place_argpass.s
+
+# target to generate assembly for a file
+src/_pick_place_argpass.cpp.s:
+	cd /home/is/catkin_ws/build && $(MAKE) -f cobot_IK/CMakeFiles/_pick_place_argpass_node.dir/build.make cobot_IK/CMakeFiles/_pick_place_argpass_node.dir/src/_pick_place_argpass.cpp.s
+.PHONY : src/_pick_place_argpass.cpp.s
+
 src/ik_test.o: src/ik_test.cpp.o
 
 .PHONY : src/ik_test.o
@@ -1162,6 +1204,7 @@ help:
 	@echo "... octomap_msgs_generate_messages_eus"
 	@echo "... nodelet_generate_messages_eus"
 	@echo "... install"
+	@echo "... _pick_place_argpass_node"
 	@echo "... visualization_msgs_generate_messages_py"
 	@echo "... moveit_msgs_generate_messages_lisp"
 	@echo "... list_install_components"
@@ -1191,6 +1234,9 @@ help:
 	@echo "... moveit_ros_manipulation_gencfg"
 	@echo "... topic_tools_generate_messages_cpp"
 	@echo "... pcl_msgs_generate_messages_eus"
+	@echo "... src/_pick_place_argpass.o"
+	@echo "... src/_pick_place_argpass.i"
+	@echo "... src/_pick_place_argpass.s"
 	@echo "... src/ik_test.o"
 	@echo "... src/ik_test.i"
 	@echo "... src/ik_test.s"
