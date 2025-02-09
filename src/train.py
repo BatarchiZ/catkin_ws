@@ -6,7 +6,7 @@ from kill import kill
 import gymnasium as gym
 from stable_baselines3 import PPO, SAC, A2C
 from stable_baselines3.common.vec_env import DummyVecEnv
-from gym_class import GraspEnv  # Ensure your GraspEnv is properly implemented
+from __class_gym import GraspEnv  # Ensure your GraspEnv is properly implemented
 
 import pandas as pd
 import time
