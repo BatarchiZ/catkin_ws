@@ -31,7 +31,8 @@ def kill_all_ros_processes():
             ).stdout.strip()
             print(cmdline)
 
-            if "gym_class" not in cmdline:
+            if ("gym_class" not in cmdline) and ("train" not in cmdline):
+                print(cmdline)
                 subprocess.run(["kill", "-9", pid])
 
     subprocess.run(["pkill", "-f", "pick_place_simple_client_node"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
@@ -127,57 +128,56 @@ import signal
 import subprocess
 import sys
 import time
+import select 
 
-def move_cobot(x, y, z, log_file="/home/is/catkin_ws/src/____logs/cobot_log.txt", timeout=120):
+def move_cobot(x, y, z, log_file="/home/is/catkin_ws/src/____logs/cobot_log.txt", timeout=130):
+
+
     print(f"Executing pick-and-place at position: x={x}, y={y}, z={z}")
-
-    with open(log_file, "a", buffering=1) as log:  # Open log file in line-buffered mode
+    with open(log_file, "a", buffering=1) as log:  # Line-buffered mode
         try:
             pick_place = subprocess.Popen(
                 ["bash", "-c", f"export PYTHONUNBUFFERED=1; source /opt/ros/noetic/setup.bash && source ~/catkin_ws/devel/setup.bash && stdbuf -oL rosrun cobot_IK _pick_place_argpass_node {x} {y} {z}"],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
-                text=True,
-                bufsize=1
+                universal_newlines=True,
+                bufsize=1  # Line-buffered output
             )
 
             start_time = time.time()
 
             while True:
-                # Check for timeout
+                # Timeout check
                 if time.time() - start_time > timeout:
                     print("\nTimeout reached! Terminating the pick-and-place process...")
                     pick_place.terminate()
                     try:
-                        pick_place.wait(timeout=5)  # Allow process to clean up
+                        pick_place.wait(timeout=5)  # Allow graceful shutdown
                     except subprocess.TimeoutExpired:
                         pick_place.kill()  # Force kill if still running
                     return -1  # Indicate timeout
 
-                output = pick_place.stdout.readline()
-                if output == "" and pick_place.poll() is not None:
+                # Use `select` to check if there's new output **without blocking**
+                ready_to_read, _, _ = select.select([pick_place.stdout, pick_place.stderr], [], [], 0.1)
+
+                for stream in ready_to_read:
+                    line = stream.readline()
+                    if line:
+                        sys.stdout.write(line)
+                        sys.stdout.flush()
+                        log.write(line)
+                        log.flush()
+
+                # If process is done, exit loop
+                if pick_place.poll() is not None:
                     break
-                if output:
-                    sys.stdout.write(output)
-                    sys.stdout.flush()
-                    log.write(output)
-                    log.flush()  # Force write to file
 
-                error = pick_place.stderr.readline()
-                if error:
-                    sys.stderr.write(error)
-                    sys.stderr.flush()
-                    log.write(error)
-                    log.flush()  # Force write to file
-
-            pick_place.wait()  # Wait for process completion
+            pick_place.wait()  # Ensure process fully exits
+            return 0  # Success
 
         except Exception as e:
             print(f"Error: {e}")
             return -1  # Return error code on failure
-
-    print("\nPick-place script finished. Log saved to", log_file)
-    return 0  # Indicate success
 
 
 if __name__ == "__main__":

@@ -2,7 +2,6 @@ import gym
 import numpy as np
 import cv2
 from gym import spaces
-from stable_baselines3 import PPO
 import time
 import os
 from gazebo_msgs.msg import ModelStates
@@ -71,15 +70,18 @@ def check_grasp_success(x, y, z):
 
 class GraspEnv(gym.Env):
     def __init__(self, image_path):
+        print("<INFO> CONSTRUCTOR")
         super(GraspEnv, self).__init__()
         self.image_path = image_path  # Path to the real-time image
         self.observation_space = spaces.Box(low=0, high=255, shape=(480, 640, 3), dtype=np.uint8)  # Image as input
         self.action_space = spaces.Box(low=np.array([-1, -1]), high=np.array([1, 1]), dtype=np.float32)  # Normalized (x, y)
         
-        start_world()  # Relaunch the simulation
-        launch_tracker() # Position node for checking object position
+        # start_world()  # Relaunch the simulation
+        # launch_tracker() # Position node for checking object position
+        print("<INFO> CONSTRUCTOR END")
 
     def reset(self):
+        print("<INFO> RESETTING")
         kill_all_ros_processes()  # Ensure a clean restart
         start_world()  # Relaunch the simulation
 
@@ -93,15 +95,19 @@ class GraspEnv(gym.Env):
         self.image = cv2.imread(self.image_path)
         if self.image is None:
             raise ValueError("Failed to load image from path.")
-        
+        print("<INFO> RESETTING END")
         return self.image  # Return as observation
 
     def step(self, action):
+        print("<INFO> STEP")
         z = 0.5
         x, y = action  # RL chooses (x, y)
 
         x1, y1, z1 = get_object_position()
-        move_cobot(x, y, z)
+        fail = move_cobot(x, y, z)
+        if fail == -1: 
+            self.reset()
+            return self.image, 0, False, _
         x2, y2, z2 = get_object_position()
         displacement = np.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2 + (z2 - z1) ** 2)
         threshold = 0.02
@@ -115,22 +121,20 @@ class GraspEnv(gym.Env):
 
         success = check_grasp_success(x, y, z)
 
-        if success == 1:
-            reward = 100
-        elif success == 0:
-            distance = -1
-            reward = 1 / distance
-
-
         self.image = cv2.imread(self.image_path)
         if self.image is None:
             raise ValueError("Failed to load image from path.")
         
-        return self.image, reward, True, {}
+        if success == 1:
+            reward = 100
+            return self.image, reward, True, {}
 
-
-from stable_baselines3 import PPO
-
+        elif success == 0:
+            distance = -1
+            reward = 1 / distance
+        
+        print("<INFO> STEP END")
+        return self.image, reward, False, {}
 
 
 import time
@@ -138,7 +142,7 @@ import time
 if __name__ == "__main__":
     try: 
         env = GraspEnv(image_path="/home/is/catkin_ws/src/z_output/recent_frame.jpg")
-
+        env.reset()
         total_start_time = time.time()  # Start timing the total execution
 
         for i in range(3000):
@@ -160,8 +164,8 @@ if __name__ == "__main__":
         kill()
     except KeyboardInterrupt:
         total_time = time.time() - total_start_time  # Calculate total execution time
-        print(f"\nTotal execution time for 3000 iterations: {total_time:.2f} sec")
-        print(f"Average time per step: {total_time / 3000:.4f} sec")
+        print(f"\nTotal execution time for x iterations: {total_time:.2f} sec")
+        print(f"Average time per step: {total_time / i:.4f} sec")
         kill()
 
         
