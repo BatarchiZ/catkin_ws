@@ -39,4 +39,5 @@ if __name__ == "__main__":
         camera_subscriber = CameraSubscriber()
         camera_subscriber.run()
     except rospy.ROSInterruptException:
+        cv2.destroyAllWindows()
         print("\nShutting down camera subscriber...")

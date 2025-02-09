@@ -1,0 +1,94 @@
+[0m[ INFO] [1739084091.926100807]: Loading robot model 'cobot'...[0m
+[33m[ WARN] [1739084091.925003346]: link 'camera_link' material 'red' undefined.[0m
+[0m[ INFO] [1739084091.926117223]: No root/virtual joint specified in SRDF. Assuming fixed joint[0m
+[33m[ WARN] [1739084091.925394749]: link 'camera_link' material 'red' undefined.[0m
+[0m[ INFO] [1739084093.383610847, 241.698000000]: Ready to take commands for planning group arm.[0m
+[33m[ WARN] [1739084091.925406998]: link 'camera2_link' material 'red' undefined.[0m
+[0m[ INFO] [1739084093.920555757, 242.185000000]: Ready to take commands for planning group hand.[0m
+[33m[ WARN] [1739084091.925410665]: link 'camera2_link' material 'red' undefined.[0m
+[0m[ INFO] [1739084093.920702835, 242.185000000]: Moving to target position: x=0.817, y=0.869, z=0.500[0m
+[33m[ WARN] [1739084091.926005518]: Link 'rgbd_camera_link' is not known to URDF. Cannot disable/enable collisons.[0m
+[0m[ INFO] [1739084154.190775608, 292.836000000]: ABORTED: CONTROL_FAILED[0m
+[33m[ WARN] [1739084091.926018351]: Link 'rgbd_camera_link' is not known to URDF. Cannot disable/enable collisons.[0m
+[0m[ INFO] [1739084156.428993038]: Loading robot model 'cobot'...[0m
+[33m[ WARN] [1739084156.425888554]: link 'camera_link' material 'red' undefined.[0m
+[0m[ INFO] [1739084156.429647350]: No root/virtual joint specified in SRDF. Assuming fixed joint[0m
+[33m[ WARN] [1739084156.427230844]: link 'camera_link' material 'red' undefined.[0m
+[0m[ INFO] [1739084157.596717733, 295.804000000]: Ready to take commands for planning group arm.[0m
+[33m[ WARN] [1739084156.427251927]: link 'camera2_link' material 'red' undefined.[0m
+[0m[ INFO] [1739084158.222742913, 296.387000000]: Ready to take commands for planning group hand.[0m
+[33m[ WARN] [1739084156.427256594]: link 'camera2_link' material 'red' undefined.[0m
+[0m[ INFO] [1739084158.222784620, 296.387000000]: Moving to target position: x=0.817, y=0.869, z=0.600[0m
+[33m[ WARN] [1739084156.428879916]: Link 'rgbd_camera_link' is not known to URDF. Cannot disable/enable collisons.[0m
+[0m[ INFO] [1739084161.758690602, 299.651000000]: ABORTED: CONTROL_FAILED[0m
+[33m[ WARN] [1739084156.428896707]: Link 'rgbd_camera_link' is not known to URDF. Cannot disable/enable collisons.[0m
+[0m[ INFO] [1739084163.642562257]: Loading robot model 'cobot'...[0m
+[33m[ WARN] [1739084163.621950790]: link 'camera_link' material 'red' undefined.[0m
+[0m[ INFO] [1739084163.642726168]: No root/virtual joint specified in SRDF. Assuming fixed joint[0m
+[33m[ WARN] [1739084163.641445209]: link 'camera_link' material 'red' undefined.[0m
+[0m[ INFO] [1739084164.664325871, 302.308000000]: Ready to take commands for planning group arm.[0m
+[33m[ WARN] [1739084163.641479583]: link 'camera2_link' material 'red' undefined.[0m
+[0m[ INFO] [1739084165.185257228, 302.787000000]: Ready to take commands for planning group hand.[0m
+[33m[ WARN] [1739084163.641489833]: link 'camera2_link' material 'red' undefined.[0m
+[0m[ INFO] [1739084165.185299768, 302.787000000]: Moving to target position: x=0.042, y=-0.667, z=0.500[0m
+[33m[ WARN] [1739084163.642252767]: Link 'rgbd_camera_link' is not known to URDF. Cannot disable/enable collisons.[0m
+[0m[ INFO] [1739084259.835357967]: Loading robot model 'cobot'...[0m
+[33m[ WARN] [1739084259.832818247]: link 'camera_link' material 'red' undefined.[0m
+[0m[ INFO] [1739084259.836016324]: No root/virtual joint specified in SRDF. Assuming fixed joint[0m
+[33m[ WARN] [1739084259.833236902]: link 'camera_link' material 'red' undefined.[0m
+[0m[ INFO] [1739084261.096648536, 385.353000000]: Ready to take commands for planning group arm.[0m
+[33m[ WARN] [1739084259.833250818]: link 'camera2_link' material 'red' undefined.[0m
+[0m[ INFO] [1739084261.547167795, 385.785000000]: Ready to take commands for planning group hand.[0m
+[33m[ WARN] [1739084259.833254443]: link 'camera2_link' material 'red' undefined.[0m
+[0m[ INFO] [1739084261.547265125, 385.785000000]: Moving to target position: x=0.042, y=-0.667, z=0.600[0m
+[33m[ WARN] [1739084259.834866648]: Link 'rgbd_camera_link' is not known to URDF. Cannot disable/enable collisons.[0m
+[0m[ INFO] [1739084268.086274994]: Loading robot model 'cobot'...[0m
+[33m[ WARN] [1739084268.085371752]: link 'camera_link' material 'red' undefined.[0m
+[0m[ INFO] [1739084268.086287874]: No root/virtual joint specified in SRDF. Assuming fixed joint[0m
+[33m[ WARN] [1739084268.085675584]: link 'camera_link' material 'red' undefined.[0m
+[0m[ INFO] [1739084269.144591909, 392.529000000]: Ready to take commands for planning group arm.[0m
+[33m[ WARN] [1739084268.085688506]: link 'camera2_link' material 'red' undefined.[0m
+[0m[ INFO] [1739084269.675183749, 392.991000000]: Ready to take commands for planning group hand.[0m
+[33m[ WARN] [1739084268.085692049]: link 'camera2_link' material 'red' undefined.[0m
+[0m[ INFO] [1739084269.675216137, 392.991000000]: Moving to target position: x=-0.709, y=-0.485, z=0.500[0m
+[33m[ WARN] [1739084268.086201798]: Link 'rgbd_camera_link' is not known to URDF. Cannot disable/enable collisons.[0m
+[0m[ INFO] [1739084300.740650538]: Loading robot model 'cobot'...[0m
+[33m[ WARN] [1739084300.739719034]: link 'camera_link' material 'red' undefined.[0m
+[0m[ INFO] [1739084300.740664918]: No root/virtual joint specified in SRDF. Assuming fixed joint[0m
+[33m[ WARN] [1739084300.740024603]: link 'camera_link' material 'red' undefined.[0m
+[0m[ INFO] [1739084301.846112731, 419.874000000]: Ready to take commands for planning group arm.[0m
+[33m[ WARN] [1739084300.740035774]: link 'camera2_link' material 'red' undefined.[0m
+[0m[ INFO] [1739084302.453324336, 420.386000000]: Ready to take commands for planning group hand.[0m
+[33m[ WARN] [1739084300.740039358]: link 'camera2_link' material 'red' undefined.[0m
+[0m[ INFO] [1739084302.453357764, 420.386000000]: Moving to target position: x=-0.709, y=-0.485, z=0.600[0m
+[33m[ WARN] [1739084300.740575969]: Link 'rgbd_camera_link' is not known to URDF. Cannot disable/enable collisons.[0m
+[0m[ INFO] [1739084308.037914394]: Loading robot model 'cobot'...[0m
+[33m[ WARN] [1739084308.036891034]: link 'camera_link' material 'red' undefined.[0m
+[0m[ INFO] [1739084308.037934526]: No root/virtual joint specified in SRDF. Assuming fixed joint[0m
+[33m[ WARN] [1739084308.037218941]: link 'camera_link' material 'red' undefined.[0m
+[0m[ INFO] [1739084309.277270399, 426.423000000]: Ready to take commands for planning group arm.[0m
+[33m[ WARN] [1739084308.037231237]: link 'camera2_link' material 'red' undefined.[0m
+[0m[ INFO] [1739084309.875083485, 426.988000000]: Ready to take commands for planning group hand.[0m
+[33m[ WARN] [1739084308.037235030]: link 'camera2_link' material 'red' undefined.[0m
+[0m[ INFO] [1739084309.875122582, 426.988000000]: Moving to target position: x=0.745, y=-0.395, z=0.500[0m
+[33m[ WARN] [1739084308.037839326]: Link 'rgbd_camera_link' is not known to URDF. Cannot disable/enable collisons.[0m
+[0m[ INFO] [1739084362.676079452]: Loading robot model 'cobot'...[0m
+[33m[ WARN] [1739084362.674915781]: link 'camera_link' material 'red' undefined.[0m
+[0m[ INFO] [1739084362.676100750]: No root/virtual joint specified in SRDF. Assuming fixed joint[0m
+[33m[ WARN] [1739084362.675352658]: link 'camera_link' material 'red' undefined.[0m
+[0m[ INFO] [1739084363.768433987, 475.609000000]: Ready to take commands for planning group arm.[0m
+[33m[ WARN] [1739084362.675366620]: link 'camera2_link' material 'red' undefined.[0m
+[0m[ INFO] [1739084364.469215217, 476.186000000]: Ready to take commands for planning group hand.[0m
+[33m[ WARN] [1739084362.675370371]: link 'camera2_link' material 'red' undefined.[0m
+[0m[ INFO] [1739084364.469252311, 476.186000000]: Moving to target position: x=0.745, y=-0.395, z=0.600[0m
+[33m[ WARN] [1739084362.675950206]: Link 'rgbd_camera_link' is not known to URDF. Cannot disable/enable collisons.[0m
+[0m[ INFO] [1739084370.455979202]: Loading robot model 'cobot'...[0m
+[33m[ WARN] [1739084370.454244546]: link 'camera_link' material 'red' undefined.[0m
+[0m[ INFO] [1739084370.456003875]: No root/virtual joint specified in SRDF. Assuming fixed joint[0m
+[33m[ WARN] [1739084370.455036353]: link 'camera_link' material 'red' undefined.[0m
+[0m[ INFO] [1739084371.628821834, 482.163000000]: Ready to take commands for planning group arm.[0m
+[33m[ WARN] [1739084370.455245036]: link 'camera2_link' material 'red' undefined.[0m
+[0m[ INFO] [1739084372.152783115, 482.585000000]: Ready to take commands for planning group hand.[0m
+[33m[ WARN] [1739084370.455251872]: link 'camera2_link' material 'red' undefined.[0m
+[0m[ INFO] [1739084372.152817416, 482.585000000]: Moving to target position: x=0.095, y=-0.679, z=0.500[0m
+[33m[ WARN] [1739084370.455874964]: Link 'rgbd_camera_link' is not known to URDF. Cannot disable/enable collisons.[0m
