@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import rospy
 from gazebo_msgs.msg import ModelStates
 from std_srvs.srv import Trigger, TriggerResponse

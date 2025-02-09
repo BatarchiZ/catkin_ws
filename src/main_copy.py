@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import subprocess
 import os
 import time
@@ -20,7 +22,7 @@ def kill_all_ros_processes():
         stdout=subprocess.PIPE,
         text=True
     ).stdout.strip().split("\n")
-    print(process_list)
+    # print(process_list)
 
     for pid in process_list:
         if pid.isdigit():
@@ -29,10 +31,10 @@ def kill_all_ros_processes():
                 stdout=subprocess.PIPE,
                 text=True
             ).stdout.strip()
-            print(cmdline)
+            # print(cmdline)
 
             if ("gym_class" not in cmdline) and ("train" not in cmdline):
-                print(cmdline)
+                # print(cmdline)
                 subprocess.run(["kill", "-9", pid])
 
     subprocess.run(["pkill", "-f", "pick_place_simple_client_node"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
@@ -65,66 +67,10 @@ def start_world():
         stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, preexec_fn=os.setsid
     )
     processes.append(camera_process)
-    time.sleep(5) 
-    
     return 0
-
-# def move_cobot(x, y, z):
-#     print(f"Executing pick-and-place at position: x={x}, y={y}, z={z}")
-
-#     pick_place = subprocess.Popen(
-#         ["bash", "-c", f"source /opt/ros/noetic/setup.bash && source ~/catkin_ws/devel/setup.bash && rosrun cobot_IK _pick_place_argpass_node {x} {y} {z}"],
-#         stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, preexec_fn=os.setsid
-#     )
-#     processes.append(pick_place)
-
-#     while pick_place.poll() is None:
-#         time.sleep(1)
-
-#     print("\nPick-place script finished.")
-#     return 0
 
 
 import signal
-
-# def move_cobot(x, y, z, log_file="/home/is/catkin_ws/src/____logs/cobot_log.txt"):
-#     print(f"Executing pick-and-place at position: x={x}, y={y}, z={z}")
-
-#     with open(log_file, "a", buffering=1) as log:  # Open log file in line-buffered mode
-#         # try:
-#             pick_place = subprocess.Popen(
-#                 ["bash", "-c", f"export PYTHONUNBUFFERED=1; source /opt/ros/noetic/setup.bash && source ~/catkin_ws/devel/setup.bash && stdbuf -oL rosrun cobot_IK _pick_place_argpass_node {x} {y} {z}"],
-#                 stdout=subprocess.PIPE,
-#                 stderr=subprocess.PIPE,
-#                 text=True,
-#                 bufsize=1
-#             )
-
-#             while True:
-#                 output = pick_place.stdout.readline()
-#                 if output == "" and pick_place.poll() is not None:
-#                     break
-#                 if output:
-#                     sys.stdout.write(output)
-#                     sys.stdout.flush()
-#                     log.write(output)
-#                     log.flush()  # Force write to file
-
-#             while True:
-#                 error = pick_place.stderr.readline()
-#                 if error == "" and pick_place.poll() is not None:
-#                     break
-#                 if error:
-#                     sys.stderr.write(error)
-#                     sys.stderr.flush()
-#                     log.write(error)
-#                     log.flush()  # Force write to file
-
-#             pick_place.wait()  # Wait for process completion
-
-#     print("\nPick-place script finished. Log saved to", log_file)
-#     return 0
-
 import subprocess
 import sys
 import time
@@ -163,8 +109,8 @@ def move_cobot(x, y, z, log_file="/home/is/catkin_ws/src/____logs/cobot_log.txt"
                 for stream in ready_to_read:
                     line = stream.readline()
                     if line:
-                        sys.stdout.write(line)
-                        sys.stdout.flush()
+                        # sys.stdout.write(line)
+                        # sys.stdout.flush()
                         log.write(line)
                         log.flush()
 
