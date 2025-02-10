@@ -1,5 +1,5 @@
 .venv/
-____logs/
+____logs
 .vscode/
 __pycache__/
-
+z_models/
