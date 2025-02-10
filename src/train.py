@@ -24,10 +24,10 @@ if __name__ == "__main__":
         callback = SaveMetricsCallback(log_dir="/home/is/catkin_ws/src/____logs/")
 
         # Train for exactly one movement (one step)
-        model.learn(total_timesteps=10, callback=callback)
+        model.learn(total_timesteps=500, callback=callback)
 
         # Save model after training
-        model.save("z_models/a2c_testing_090225.zip")
+        model.save("z_models/a2c_testing_100225.zip")
 
         env.close()
         kill()

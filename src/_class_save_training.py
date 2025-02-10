@@ -1,6 +1,7 @@
 import csv
 import os
 from stable_baselines3.common.callbacks import BaseCallback
+import numpy as np
 
 class SaveMetricsCallback(BaseCallback):
     def __init__(self, log_dir="logs", verbose=1):
@@ -26,6 +27,6 @@ class SaveMetricsCallback(BaseCallback):
                 writer.writerow(["Step", "Reward", "Loss"])
                 self.first_write = False
 
-            writer.writerow([self.num_timesteps, sum(reward), loss])
+            writer.writerow([self.num_timesteps, np.round(reward,4), loss])
 
         return True  # Continue training

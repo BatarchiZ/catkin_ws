@@ -41,3 +41,8 @@ if __name__ == "__main__":
     except rospy.ROSInterruptException:
         cv2.destroyAllWindows()
         print("\nShutting down camera subscriber...")
+
+
+
+
+        print("100 reps in gym v3")

@@ -54,19 +54,43 @@ def kill_all_ros_processes():
     print("All ROS services and processes terminated.")
     return 0
 
+# def start_world():
+#     print("Launching robot simulation...")
+#     sim_process = subprocess.Popen(
+#         ["bash", "-c", "source /opt/ros/noetic/setup.bash && source ~/catkin_ws/devel/setup.bash && roslaunch cobot_sim spawn_robot_2Dcamera_traj_controller_world.launch"],
+#         stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, preexec_fn=os.setsid
+#     )
+#     processes.append(sim_process)
+
+#     camera_process = subprocess.Popen(
+#         ["bash", "-c", "source /opt/ros/noetic/setup.bash && source ~/catkin_ws/devel/setup.bash && python3 /home/is/catkin_ws/src/camera_publisher.py"],
+#         stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, preexec_fn=os.setsid
+#     )
+#     processes.append(camera_process)
+#     return 0
+
 def start_world():
     print("Launching robot simulation...")
+
     sim_process = subprocess.Popen(
-        ["bash", "-c", "source /opt/ros/noetic/setup.bash && source ~/catkin_ws/devel/setup.bash && roslaunch cobot_sim spawn_robot_2Dcamera_traj_controller_world.launch"],
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, preexec_fn=os.setsid
+    ["bash", "-c", "source /opt/ros/noetic/setup.bash && source ~/catkin_ws/devel/setup.bash && roslaunch cobot_sim spawn_robot_2Dcamera_traj_controller_world.launch"],
+    stdout=subprocess.PIPE,
+    stderr=subprocess.PIPE,
+    text=True,
+    preexec_fn=os.setsid  # Starts a new process group
     )
+
     processes.append(sim_process)
+
+    print("World launched.")
 
     camera_process = subprocess.Popen(
         ["bash", "-c", "source /opt/ros/noetic/setup.bash && source ~/catkin_ws/devel/setup.bash && python3 /home/is/catkin_ws/src/camera_publisher.py"],
         stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, preexec_fn=os.setsid
     )
     processes.append(camera_process)
+    time.sleep(5) 
+    
     return 0
 
 
@@ -131,16 +155,17 @@ if __name__ == "__main__":
 
     try:
         start_world()
+        print("DONE")
 
-        coords = [(0.0, 0.0, 0.5), (1.0, 0.0, 0.5)]
-        for coord in coords:
-            path = "/home/is/catkin_ws/src/z_output/recent_frame.jpg"
-            cur_camera_image = cv2.imread(path)
-            print(cur_camera_image.shape)
-            x, y, z = coord  # Example target position
-            move_cobot(x, y, z)
+        # coords = [(0.0, 0.0, 0.5), (1.0, 0.0, 0.5)]
+        # for coord in coords:
+        #     path = "/home/is/catkin_ws/src/z_output/recent_frame.jpg"
+        #     cur_camera_image = cv2.imread(path)
+        #     print(cur_camera_image.shape)
+        #     x, y, z = coord  # Example target position
+        #     move_cobot(x, y, z)
 
-        kill_all_ros_processes()
+        # kill_all_ros_processes()
 
     except KeyboardInterrupt:
         kill_all_ros_processes()  # Fully clean up before 

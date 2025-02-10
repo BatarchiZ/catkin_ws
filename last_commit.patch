@@ -1,0 +1,16 @@
+diff --git a/src/.gitignore b/src/.gitignore
+index c1a8aa2..beb50e8 100644
+--- a/src/.gitignore
++++ b/src/.gitignore
+@@ -1,5 +1,5 @@
+ .venv/
+-____logs/
++____logs
+ .vscode/
+ __pycache__/
+-
++z_models/
+diff --git a/src/z_models/a2c_testing_090225.zip b/src/z_models/a2c_testing_090225.zip
+deleted file mode 100644
+index cb94755..0000000
+Binary files a/src/z_models/a2c_testing_090225.zip and /dev/null differ

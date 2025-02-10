@@ -41,34 +41,60 @@ def get_object_position():
         print(f"[ERROR] Service call failed: {e}")
         return None, None, None
 
-def check_grasp_success(x, y, z):
-    threshold = 0.02
-    rospy.loginfo("Checking grasp success...")
+def launch_euclid_distance():
+    print("[DEBUG] Launching new distance_calculator node...")
+    subprocess.Popen(["/usr/bin/python3", "_class_euclidean_distance_calculator.py"])
+    time.sleep(3)  # Wait for the node to start
 
-    x1, y1, z1 = get_object_position()
-    if x1 is None:
-        return False
-    
-    move_cobot(x, y, z + 0.1)
-    
-    # Uncomment to check whether item is moved
-    # move_cobot(1.0, 0.0, 0.5)
-    time.sleep(1)
 
-    x2, y2, z2 = get_object_position()
-    if x2 is None:
-        return False
-    
+def get_euclidean_distance():
+    rospy.wait_for_service("/get_gripper_distance")
+    try:
+        get_distance = rospy.ServiceProxy("/get_gripper_distance", Trigger)
+        response = get_distance()
+        if response.success:
+            print(f"[INFO] Distance between cobot and object: {response.message}")
+            # distnace = map(float, response.message.split(', '))
+            return float(response.message)
+        else:
+            print(f"[WARN] Failed to get distance: {response.message}")
+            return None
+    except rospy.ServiceException as e:
+        print(f"[ERROR] Service call failed: {e}")
+        return None
 
-    displacement = np.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2 + (z2 - z1) ** 2) 
-    rospy.loginfo(f"Object displacement: {displacement}")
 
-    if displacement > threshold:
-        print("OBJECT_MOVED", displacement)
+def check_grasp_success(distance):
+    # distance = get_euclidean_distance()
+    if distance <= (0.055**2 + 0.055**2 + 0**2)**(0.5):
+        print("OBJECT WITHIN THE GRIPPER")
+        return True
     else:
-        print("no_move"), displacement
+        return False
+
+    # threshold = 0.02
+    # rospy.loginfo("Checking grasp success...")
+
+    # x1, y1, z1 = get_object_position()
+    # if x1 is None:
+    #     return False
     
-    return displacement > threshold
+    # move_cobot(x, y, z + 0.1)
+
+    # x2, y2, z2 = get_object_position()
+    # if x2 is None:
+    #     return False
+    
+
+    # displacement = np.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2 + (z2 - z1) ** 2) 
+    # rospy.loginfo(f"Object displacement: {displacement}")
+
+    # if displacement > threshold:
+    #     print("OBJECT_MOVED", displacement)
+    # else:
+    #     print("no_move"), displacement
+    
+    # return displacement > threshold
 
 class GraspEnv(gym.Env):
     def __init__(self, image_path):
@@ -76,8 +102,9 @@ class GraspEnv(gym.Env):
         super(GraspEnv, self).__init__()
         self.image_path = image_path  # Path to the real-time image
         self.observation_space = spaces.Box(low=0, high=255, shape=(480, 640, 3), dtype=np.uint8)  # Image as input
-        self.action_space = spaces.Box(low=np.array([-1, -1]), high=np.array([1, 1]), dtype=np.float32)  # Normalized (x, y)
+        self.action_space = spaces.Box(low=np.array([0, 0.05]), high=np.array([1, 0.7]), dtype=np.float32)  # Normalized (x, y)
         print("<INFO> CONSTRUCTOR END")
+        self.min_distance = 2
 
     def reset(self):
         print("<INFO> RESETTING")
@@ -85,8 +112,10 @@ class GraspEnv(gym.Env):
         start_world()  # Relaunch the simulation
 
         launch_tracker() # Position node for checking object position
+        launch_euclid_distance()
 
-        time.sleep(5)  # Allow some time for startup
+        self.obj_x1, self.obj_y1, self.obj_z1 = get_object_position()
+        time.sleep(2)  # Allow some time for startup
         
         if not os.path.exists(self.image_path):
             raise FileNotFoundError(f"Image file not found: {self.image_path}")
@@ -98,60 +127,41 @@ class GraspEnv(gym.Env):
         return self.image  # Return as observation
     
     def _my_reset(self):
-        print("<INFO> RESETTING")
-        kill_all_ros_processes()  # Ensure a clean restart
-        start_world()  # Relaunch the simulation
-
-        launch_tracker() # Position node for checking object position
-
-        time.sleep(5)  # Allow some time for startup
-        
-        if not os.path.exists(self.image_path):
-            raise FileNotFoundError(f"Image file not found: {self.image_path}")
-        
-        self.image = cv2.imread(self.image_path)
-        if self.image is None:
-            raise ValueError("Failed to load image from path.")
-        print("<INFO> RESETTING END")
-        return self.image  # Return as observation
+        self.image = self.reset()
+        return self.image
 
     def step(self, action):
-        reward = 0
-
         print("<INFO> STEP")
+        reward = 0
         z = 0.5
         x, y = action  # RL chooses (x, y)
-
-        x1, y1, z1 = get_object_position()
+        
         fail = move_cobot(x, y, z)
         if fail == -1: 
-            # self._my_reset()
-            return self.image, 0, True, {}
-        x2, y2, z2 = get_object_position()
-        displacement = np.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2 + (z2 - z1) ** 2)
-        threshold = 0.02
-
-
+            self._my_reset()
+            reward = -1
+            return self.image, reward, True, {}
+        
+        obj_x2, obj_y2, obj_z2 = get_object_position()
+        displacement = np.sqrt((obj_x2 - self.obj_x1) ** 2 + (obj_y2 - self.obj_y1) ** 2 + (obj_z2 - self.obj_z1) ** 2)
+        threshold = 0.055
         if displacement > threshold:
-            print("COBOT MOVED OBJECT")
-            # self._my_reset()
-            reward = -100
+            print("<<<<FAIL>>>> COBOT MOVED OBJECT")
+            self._my_reset()
+            reward = -10
             return self.image, reward, False, {}
         
-
-        success = check_grasp_success(x, y, z)
-
-        self.image = cv2.imread(self.image_path)
-        if self.image is None:
-            raise ValueError("Failed to load image from path.")
+        # self.image = cv2.imread(self.image_path)
         
+        distance = get_euclidean_distance()
+        success = check_grasp_success(distance)
         if success == 1:
             reward = 100
             return self.image, reward, True, {}
-
         elif success == 0:
-            distance = -1
-            reward = 1 / distance
+            reward = max((self.min_distance - distance), -0.2)
+            self.min_distance = min(self.min_distance, distance)
+
         
         print("<INFO> STEP END")
         return self.image, reward, False, {}
