@@ -6,95 +6,12 @@ import cv2
 from gym import spaces
 import time
 import os
-from gazebo_msgs.msg import ModelStates
 
-from kill import kill
-
-import rospy
-
-from main_copy import kill_all_ros_processes, start_world, move_cobot
+from main_copy import kill_all_ros_processes, start_world
+from cobot_controls import move_cobot, control_gripper
+from service_server_control import *
 
 
-import subprocess
-import rospy
-import time
-from std_srvs.srv import Trigger
-
-def launch_tracker():
-    print("[DEBUG] Launching new tracker node...")
-    subprocess.Popen(["/usr/bin/python3", "_class_object_tracker_copy.py"])
-    time.sleep(3)  # Wait for the node to start
-
-def get_object_position():
-    rospy.wait_for_service("/get_object_position")
-    try:
-        get_position = rospy.ServiceProxy("/get_object_position", Trigger)
-        response = get_position()
-        if response.success:
-            print(f"[INFO] Object Position: {response.message}")
-            x1, y1, z1 = map(float, response.message.split(', '))
-            return x1, y1, z1
-        else:
-            print(f"[WARN] Failed to get object position: {response.message}")
-            return None, None, None
-    except rospy.ServiceException as e:
-        print(f"[ERROR] Service call failed: {e}")
-        return None, None, None
-
-def launch_euclid_distance():
-    print("[DEBUG] Launching new distance_calculator node...")
-    subprocess.Popen(["/usr/bin/python3", "_class_euclidean_distance_calculator.py"])
-    time.sleep(3)  # Wait for the node to start
-
-
-def get_euclidean_distance():
-    rospy.wait_for_service("/get_gripper_distance")
-    try:
-        get_distance = rospy.ServiceProxy("/get_gripper_distance", Trigger)
-        response = get_distance()
-        if response.success:
-            print(f"[INFO] Distance between cobot and object: {response.message}")
-            # distnace = map(float, response.message.split(', '))
-            return float(response.message)
-        else:
-            print(f"[WARN] Failed to get distance: {response.message}")
-            return None
-    except rospy.ServiceException as e:
-        print(f"[ERROR] Service call failed: {e}")
-        return None
-
-
-def check_grasp_success(distance):
-    # distance = get_euclidean_distance()
-    if distance <= (0.055**2 + 0.055**2 + 0**2)**(0.5):
-        print("OBJECT WITHIN THE GRIPPER")
-        return True
-    else:
-        return False
-
-    # threshold = 0.02
-    # rospy.loginfo("Checking grasp success...")
-
-    # x1, y1, z1 = get_object_position()
-    # if x1 is None:
-    #     return False
-    
-    # move_cobot(x, y, z + 0.1)
-
-    # x2, y2, z2 = get_object_position()
-    # if x2 is None:
-    #     return False
-    
-
-    # displacement = np.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2 + (z2 - z1) ** 2) 
-    # rospy.loginfo(f"Object displacement: {displacement}")
-
-    # if displacement > threshold:
-    #     print("OBJECT_MOVED", displacement)
-    # else:
-    #     print("no_move"), displacement
-    
-    # return displacement > threshold
 
 class GraspEnv(gym.Env):
     def __init__(self, image_path):
@@ -104,8 +21,6 @@ class GraspEnv(gym.Env):
         self.observation_space = spaces.Box(low=0, high=255, shape=(480, 640, 3), dtype=np.uint8)  # Image as input
         self.action_space = spaces.Box(low=np.array([0, 0.05]), high=np.array([1, 0.7]), dtype=np.float32)  # Normalized (x, y)
         print("<INFO> CONSTRUCTOR END")
-        self.min_distance = 2
-
     def reset(self):
         print("<INFO> RESETTING")
         kill_all_ros_processes()  # Ensure a clean restart
@@ -113,6 +28,9 @@ class GraspEnv(gym.Env):
 
         launch_tracker() # Position node for checking object position
         launch_euclid_distance()
+        launch_gripper_tracker()
+
+        self.min_distance = 2
 
         self.obj_x1, self.obj_y1, self.obj_z1 = get_object_position()
         time.sleep(2)  # Allow some time for startup
@@ -136,35 +54,69 @@ class GraspEnv(gym.Env):
         z = 0.5
         x, y = action  # RL chooses (x, y)
         
+        # COBOT may get jammed -
+        # fail is when movement execution was longer that 130 seconds
         fail = move_cobot(x, y, z)
         if fail == -1: 
-            self._my_reset()
+            # self._my_reset()
             reward = -1
             return self.image, reward, True, {}
         
+        # CHECK whether object was moved unintentionally
+        # IF moved -> restart environment 
         obj_x2, obj_y2, obj_z2 = get_object_position()
         displacement = np.sqrt((obj_x2 - self.obj_x1) ** 2 + (obj_y2 - self.obj_y1) ** 2 + (obj_z2 - self.obj_z1) ** 2)
         threshold = 0.055
         if displacement > threshold:
             print("<<<<FAIL>>>> COBOT MOVED OBJECT")
-            self._my_reset()
+            # self._my_reset()
             reward = -10
-            return self.image, reward, False, {}
+            return self.image, reward, True, {}
+        
+        # CLOSE gripper
+        control_gripper(0.055)
         
         # self.image = cv2.imread(self.image_path)
-        
         distance = get_euclidean_distance()
-        success = check_grasp_success(distance)
-        if success == 1:
-            reward = 100
-            return self.image, reward, True, {}
-        elif success == 0:
-            reward = max((self.min_distance - distance), -0.2)
-            self.min_distance = min(self.min_distance, distance)
 
-        
+        # CHECK whether gripper closed full amount
+        # IF did not close properly 
+        # THEN we grasped object
+        success = self.check_grasp_success(x, y, z, distance)
+        if success:
+            reward = 10
+            return self.image, reward, True, {}  # Restarts environment
+        else:
+            if 0 <= distance <= (0.1**2 + 0.1**2 + 0**2) ** (0.5): # We are very close # 0.1 is length of gripper ## TUT LUSCHE MINIMIZE NOT THECENTER OF THE GRIPEPR BUT THE RIGHTMOST POINT AND THEN DURING GRIP JUST MOVE LEFT
+                reward = 0
+            else :
+                reward = (self.min_distance - distance) # The closer we are the larger the reward. The further we are the bigger the penalty. 
+
+            self.min_distance = min(self.min_distance, max(distance, (0.1**2 + 0.1**2 + 0**2)**(1/2)))
+
+        # OPEN gripper for the next movement
+        control_gripper(0.0)
         print("<INFO> STEP END")
         return self.image, reward, False, {}
+
+    def check_grasp_success(self, x, y, z, distance):
+        # time.sleep(1)
+        error = get_gripper_disposition()
+        # print(error)
+        # print(error >= 0.0075)
+        if (error >= 0.0075): 
+            print(error, distance)
+        threshold_error = 0.0075
+        if error >= threshold_error: # Check 1 - grippers do not connect
+            move_cobot(x, y, z + 0.1)
+            obj_x2, obj_y2, obj_z2 = get_object_position()
+            displacement = np.sqrt((obj_x2 - self.obj_x1) ** 2 + (obj_y2 - self.obj_y1) ** 2 + (obj_z2 - self.obj_z1) ** 2)
+            threshold_displacement = 0.055
+            if displacement >= threshold_displacement: # Check 2 - object moves with cobot
+                return True
+
+
+        return False
 
 
 # import time
@@ -199,3 +151,8 @@ class GraspEnv(gym.Env):
 #         kill()
 
         
+# rostopic pub -1 /cobot/gripper_controller/command trajectory_msgs/JointTrajectory '
+# joint_names: ["gripper_right_joint"]
+# points:
+# - positions: [0.55]
+#   time_from_start: {{secs: {1}, nsecs: 0}}

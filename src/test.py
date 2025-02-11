@@ -1,60 +1,46 @@
-import rospy
-import tf
+#!/usr/bin/python3
+
+import gym
 import numpy as np
-from __class_gym import get_object_position, launch_tracker
+import cv2
+from gym import spaces
+import time
+import os
+from gazebo_msgs.msg import ModelStates
 
-# Object size from SDF
-OBJECT_SIZE_X = 0.02  # X dimension
-OBJECT_SIZE_Y = 0.02  # Y dimension
-OBJECT_SIZE_Z = 0.2   # Z dimension (height)
+from kill import kill
 
-def get_tf_position(listener, parent_frame, child_frame):
-    """ Get the position of a TF frame relative to another. """
+import rospy
+
+from main_copy import kill_all_ros_processes, start_world, move_cobot
+
+
+import subprocess
+import rospy
+import time
+from std_srvs.srv import Trigger
+
+def launch_gripper_tracker():
+    print("[DEBUG] Launching new gripper_tracker node...")
+    subprocess.Popen(["/usr/bin/python3", "_class_gripper_right_position.py"])
+    time.sleep(3)  # Wait for the node to start
+
+def get_gripper_disposition():
+    rospy.wait_for_service("/get_gripper_right_error")
     try:
-        (trans, rot) = listener.lookupTransform(parent_frame, child_frame, rospy.Time(0))
-        return np.array(trans)  # Returns (x, y, z) as a NumPy array
-    except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
-        return None
+        error = rospy.ServiceProxy("/get_gripper_right_error", Trigger)
+        response = error()
 
-def compute_midpoint(base_position):
-    """ Compute the actual midpoint of `object_pick` using its dimensions. """
-    if base_position is None:
+        if response.success:
+            print(f"[INFO] Gripper Error: {response.message}")
+            err = float(response.message)
+            return err
+        else:
+            print(f"[WARN] Failed to get object position: {response.message}")
+            return None
+    except rospy.ServiceException as e:
+        print(f"[ERROR] Service call failed: {e}")
         return None
     
-    # Midpoint is at half the height (Z direction)
-    midpoint = np.copy(base_position)
-    midpoint[2] += OBJECT_SIZE_Z / 2  # Move Z up by half the height
-    return midpoint
-
-def main():
-    launch_tracker()
-
-    rospy.init_node('gripper_object_distance_calculator')
-    listener = tf.TransformListener()
-    
-    rate = rospy.Rate(10)  # 10 Hz
-
-    while not rospy.is_shutdown():
-        # Get Gripper Midpoint Position
-        gripper_midpoint = get_tf_position(listener, "world", "grippers_midpoint")
-        # print(gripper_midpoint)
-        
-        # Get Object Base Position (not the midpoint yet)
-        object_pick_base = get_object_position()
-        # print(object_pick_base)
-
-        if gripper_midpoint is not None and object_pick_base is not None:
-            # Compute the true midpoint of the object
-            object_pick_midpoint = compute_midpoint(object_pick_base)
-            
-            # Calculate Euclidean Distance
-            distance = np.linalg.norm(gripper_midpoint - object_pick_midpoint)
-            
-            print(f"Gripper Midpoint: {gripper_midpoint}")
-            print(f"Object Pick Midpoint: {object_pick_midpoint}")
-            print(f"Euclidean Distance: {distance:.4f} meters\n")
-
-        rate.sleep()
-
-if __name__ == "__main__":
-    main()
+launch_gripper_tracker()
+print(get_gripper_disposition())
